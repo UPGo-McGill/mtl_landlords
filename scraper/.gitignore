@@ -1,4 +1,6 @@
 .DS_Store
 .sql
 .im
+*.pyc
+*.pyo
 .ipynb_checkpoints
