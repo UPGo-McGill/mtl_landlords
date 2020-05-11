@@ -90,7 +90,10 @@ def make_patterns(seq, keyletters = ["I", "J"]):
     return permutations
 
 def get_captchas(response, headers, cookies, filename_base = "captcha", folder = "img"):
-    idx = get_captcha_idx()
+    try:
+        idx = get_captcha_idx()
+    except:
+        idx = 0
     img_respone = save_captcha(response, headers, cookies, idx)
 
     if img_respone == 200:
@@ -101,6 +104,7 @@ def get_captchas(response, headers, cookies, filename_base = "captcha", folder =
             print(c)
         return captcha_s
     else:
+        print("Failed to open and save captcha image.")
         return []
 
 def pass_captcha(session, headers, captcha_s, 
