@@ -14,12 +14,13 @@ def download_matricule_numbers(filename = "data/uniteevaluationfonciere.csv",
 def load_matricule_numbers(filename = "data/uniteevaluationfonciere.csv",
                            id_col = "MATRICULE83"):
     csv_file = pd.read_csv(filename)
-    print(f"CSV file successfully loaded.\nThe total number of rows is {len(csv_file.index)}.\nThe total number of unique properties is {len(csv_file[id_col])}.")
+    print(f"CSV file successfully loaded.\nThe total number of rows is {len(csv_file.index)}.\nThe total number of unique properties is {len(set(csv_file[id_col]))}.")
     return csv_file
 
 def prepare_matricule(ids = []):
     ids_to_scrape = []
-    ids_split = [i.split("-") for i in ids]
+    ids_unique = list(set([i for i in ids]))
+    ids_split = [i.split("-") for i in ids_unique]
     for row in ids_split:
         data = {"matriculeDiv":row[0],"matriculeSect":row[1],"matriculeEmpl":row[2],
             "matriculeCav":row[3],"matriculeBati":row[4],"matriculeCad":row[5]}
