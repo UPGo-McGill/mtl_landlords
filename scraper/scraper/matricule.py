@@ -13,9 +13,15 @@ def download_matricule_numbers(filename = "data/uniteevaluationfonciere.csv",
 
 def load_matricule_numbers(filename = "data/uniteevaluationfonciere.csv",
                            id_col = "MATRICULE83"):
-    csv_file = pd.read_csv(filename)
-    print(f"CSV file successfully loaded.\nThe total number of rows is {len(csv_file.index)}.\nThe total number of unique properties is {len(set(csv_file[id_col]))}.")
-    return csv_file
+    if filename.split('.')[1] == 'csv':
+        csv_file = pd.read_csv(filename)
+        print(f"CSV file successfully loaded.\nThe total number of rows is {len(csv_file.index)}.\nThe total number of unique properties is {len(set(csv_file[id_col]))}.")
+        return csv_file
+    elif filename.split('.')[1] == 'txt':
+        with open(filename) as f:
+            ids = f.readlines()
+            print(f"Text file successfully loaded.\nThe total number of rows is {len(ids)}.\nThe total number of unique properties is {len(set(ids))}.")
+        return ids
 
 def prepare_matricule(ids = []):
     ids_to_scrape = []
