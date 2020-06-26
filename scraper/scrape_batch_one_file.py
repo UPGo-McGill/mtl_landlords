@@ -27,8 +27,6 @@ def scrape_batch():
         start = 0
         stop = len(matricule_df)
     batches = range(start, stop, batch_size)
-    idx = 0
-    success = False
     print(f"Initializing session with batch size {batch_size} and upper limit {stop}.")
     while True:
         session, response, headers, cookies = initialize_session()
@@ -38,9 +36,8 @@ def scrape_batch():
     pass_captcha(session, headers, captcha_s)
     db_file = f"sql/{timestr}/mtl_properties.sqlite"
     create_table(db_file)
-    batches = batches[idx:]
     for idx, lower in enumerate(batches):
-        print(f"PROCESSING BATCH {idx} FROM {math.ceil(stop / batch_size)}.")
+        print(f"PROCESSING BATCH {idx} FROM {math.ceil((stop-start) / batch_size)}.")
         upper = min(lower + batch_size, stop)
         ids_to_scrape = ids[lower:upper]
         try:
