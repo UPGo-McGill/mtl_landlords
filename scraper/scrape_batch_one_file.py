@@ -6,6 +6,7 @@ from scraper.sql import *
 
 import math
 import os
+import requests
 import sys
 import time
 
@@ -42,7 +43,10 @@ def scrape_batch():
         print(f"PROCESSING BATCH {idx} FROM {math.ceil(stop / batch_size)}.")
         upper = min(lower + batch_size, stop)
         ids_to_scrape = ids[lower:upper]
-        status = thread(ids_to_scrape, session, db_file, timestr)
+        try:
+            status = thread(ids_to_scrape, session, db_file, timestr)
+        except requests.exceptions.ConnectionError:
+            time.sleep(20*60)
         if status.count(False) > 50:
             break
             print("Too many fails in status count.")
