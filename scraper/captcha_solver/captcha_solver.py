@@ -4,6 +4,7 @@
 import pytesseract
 import requests
 import sys
+import os
 
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
@@ -12,6 +13,8 @@ from os import walk
 from PIL import Image
 
 import re
+
+pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract"
 
 def get_captcha_idx(path = "img"):
     regex = re.compile(r'\d+')
@@ -34,10 +37,15 @@ def save_captcha(response, headers, cookies, idx,
     image_url = baseURL + captcha_img["src"]
     img_response = requests.get(image_url, headers = headers, cookies = cookies)
     if img_response.status_code == 200:
+        print(f"Request for captcha succeeded with response code {img_response.status_code}")
         save_as = f"{folder}/{filename}_{idx+1}.{ext}"
-        print(f"Request for captcha succeeded with response code {img_response.status_code}.\nCaptcha successfully saved as '{save_as}'.")
+        dirname = os.path.dirname(save_as)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
         with open(save_as, 'wb') as f:
             f.write(img_response.content)
+        print(f"Captcha successfully saved as '{save_as}'.")
+        
     else:
         print(f"Request for captcha failed with response code {img_response.status_code}.")
     return img_response.status_code
@@ -107,7 +115,7 @@ def get_captchas(response, headers, cookies, filename_base = "captcha", folder =
         print("Failed to open and save captcha image.")
         return []
 
-def pass_captcha(session, headers, captcha_s, 
+def fail_captcha(session, headers, captcha_s, 
                  url = "https://servicesenligne2.ville.montreal.qc.ca/sel/evalweb/typeRecherche"):
     for c in captcha_s:
         print(f"Captcha to try is {c}")
@@ -116,5 +124,7 @@ def pass_captcha(session, headers, captcha_s,
         response = session.post(url, data = data, headers = headers)
         if response.status_code == 200:
             print(f"Captcha bypass attempted with HTTP response code {response.status_code}. Test scraper to verify pass.")
+            return False
         else:
-            print(f"Captcha bypass failed with response code {response.status_code}.")    
+            print(f"Captcha bypass failed with response code {response.status_code}.")   
+            return True 

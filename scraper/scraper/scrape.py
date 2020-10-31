@@ -4,6 +4,7 @@ from itertools import repeat
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from scraper.sql import *
+import concurrent.futures
 
 def fetch_url_multi(ids_to_scrape, session, db_file, timestr,
                     url = "https://servicesenligne2.ville.montreal.qc.ca/sel/evalweb/obtenirMatriculesPourNumero"
@@ -47,10 +48,14 @@ def thread(ids_to_scrape, session, db_file, timestr,
       url = "https://servicesenligne2.ville.montreal.qc.ca/sel/evalweb/obtenirMatriculesPourNumero"
      ):
     iterable = zip(ids_to_scrape, repeat(session), repeat(db_file), repeat(timestr), repeat(url))
-    with ThreadPool(cpu_count() - 1) as pool:
-        status = pool.starmap(fetch_url_multi, iterable)
-    return status
+    # with ThreadPool(30) as pool:
+    #     status = pool.starmap(fetch_url_multi, iterable)
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        status = executor.map(fetch_url_multi, ids_to_scrape)
+    return list(status)
+
         
 def make_dirs(timestr):
-    os.mkdir(f'logs/{timestr}')
-    os.mkdir(f'sql/{timestr}')
+    os.makedirs(f'logs/{timestr}')
+    os.makedirs(f'sql/{timestr}')

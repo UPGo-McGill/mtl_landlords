@@ -4,7 +4,7 @@ import pandas as pd
 import sqlite3
 
 def main():
-    time = '20200509-160404'
+    time = '20200709-135659'
     sql_folder = f'sql/{time}'
     
     full_data = pd.read_csv('data/uniteevaluationfonciere.csv')['MATRICULE83']

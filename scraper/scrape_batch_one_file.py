@@ -11,10 +11,12 @@ import sys
 import time
 
 def main():
+    print("yoink")
     scrape_batch()
+    
 
 def scrape_batch():
-    matricule_df = load_matricule_numbers()
+    
     ids = prepare_matricule(ids = matricule_df.MATRICULE83)
     timestr = time.strftime("%Y%m%d-%H%M%S")
     make_dirs(timestr)
@@ -47,6 +49,6 @@ def scrape_batch():
         if status.count(False) > 50:
             break
             print("Too many fails in status count.")
-                                          
+                                    
 if __name__ == "__main__":
     main()
